@@ -1,9 +1,18 @@
+import { useEffect, useRef } from 'react'
+
 export const LOADING_GIF_URL = '/perrito-enfermero-cargando.gif'
 
 export function StartupLoader({ onLoaded }: { onLoaded: () => void }) {
+  const imageRef = useRef<HTMLImageElement>(null)
+
+  useEffect(() => {
+    if (imageRef.current?.complete) onLoaded()
+  }, [onLoaded])
+
   return (
     <div className="startup-splash" role="status" aria-live="polite">
       <img
+        ref={imageRef}
         className="startup-splash__image"
         src={LOADING_GIF_URL}
         alt="Cargando el sistema de enfermería"

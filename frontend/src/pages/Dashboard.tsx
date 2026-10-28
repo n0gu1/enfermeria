@@ -22,12 +22,12 @@ import {
 } from '../lib/format'
 
 const DONUT_COLORS = [
-  '#0f766e',
-  '#d99a2b',
-  '#3f7f9c',
-  '#c2644a',
-  '#7a6aae',
-  '#6b8f5e',
+  '#168df0',
+  '#4ca5fa',
+  '#286dca',
+  '#7cb8f2',
+  '#587cdb',
+  '#a4cfff',
 ]
 
 interface DayPoint {

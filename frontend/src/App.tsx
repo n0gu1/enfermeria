@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { Layout } from './components/Layout'
 import { StartupLoader } from './components/Loading'
@@ -12,6 +12,7 @@ import { Registros } from './pages/Registros'
 export default function App() {
   const [loaderReady, setLoaderReady] = useState(false)
   const [showSplash, setShowSplash] = useState(true)
+  const markLoaderReady = useCallback(() => setLoaderReady(true), [])
 
   useEffect(() => {
     if (!loaderReady) return
@@ -39,7 +40,7 @@ export default function App() {
           </Routes>
         </ToastProvider>
       </div>
-      {showSplash && <StartupLoader onLoaded={() => setLoaderReady(true)} />}
+      {showSplash && <StartupLoader onLoaded={markLoaderReady} />}
     </>
   )
 }
