@@ -19,3 +19,14 @@ Thumbs.db
 
 # Docker
 .docker/
+
+# Frontend (Vite / React)
+frontend/node_modules/
+frontend/dist/
+frontend/.netlify/
+frontend/.vite/
+frontend/*.tsbuildinfo
+/.netlify/
+
+# Pruebas locales del navegador
+.playwright-mcp/
