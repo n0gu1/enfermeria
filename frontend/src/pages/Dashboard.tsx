@@ -234,7 +234,7 @@ export function Dashboard() {
               real.
             </p>
             <div className="onboarding__actions">
-              <Link className="button button--amber" to="/lugares">
+              <Link className="button button--medical" to="/lugares">
                 <Icon name="place" />
                 Crear lugar
               </Link>
