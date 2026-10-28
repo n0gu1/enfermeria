@@ -1,8 +1,11 @@
 export function PageLoader({ label = 'Cargando información…' }: { label?: string }) {
   return (
-    <div className="page-loader">
-      <span className="spinner" />
-      <span>{label}</span>
+    <div className="page-loader" role="status" aria-live="polite">
+      <img
+        className="page-loader__image"
+        src="/perrito-enfermero-cargando.gif"
+        alt={label}
+      />
     </div>
   )
 }

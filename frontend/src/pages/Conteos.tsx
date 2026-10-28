@@ -15,7 +15,7 @@ import {
 } from '../api'
 import { EmptyState } from '../components/EmptyState'
 import { Icon, type IconName } from '../components/Icon'
-import { TableSkeleton } from '../components/Loading'
+import { PageLoader } from '../components/Loading'
 import { PageHeader } from '../components/PageHeader'
 import { useToast } from '../components/Toast'
 import { downloadCsv } from '../lib/csv'
@@ -663,9 +663,7 @@ export function Conteos() {
               </button>
             </div>
           ) : loading && rows.length === 0 ? (
-            <div className="card__body">
-              <TableSkeleton rows={8} columns={meta.columns.length} />
-            </div>
+            <PageLoader label="Preparando el reporte de vacunación…" />
           ) : rows.length === 0 ? (
             <EmptyState
               icon="chart"

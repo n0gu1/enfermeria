@@ -21,7 +21,7 @@ import {
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { EmptyState } from '../components/EmptyState'
 import { Icon } from '../components/Icon'
-import { TableSkeleton } from '../components/Loading'
+import { PageLoader } from '../components/Loading'
 import { Modal } from '../components/Modal'
 import { PageHeader } from '../components/PageHeader'
 import { useToast } from '../components/Toast'
@@ -565,9 +565,7 @@ export function Registros() {
               </button>
             </div>
           ) : loading && !data ? (
-            <div className="card__body">
-              <TableSkeleton rows={8} columns={6} />
-            </div>
+            <PageLoader label="Cargando registros de vacunación…" />
           ) : !data || data.items.length === 0 ? (
             <EmptyState
               icon={activeFilters > 0 ? 'filter' : 'records'}

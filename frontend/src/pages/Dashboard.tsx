@@ -9,7 +9,7 @@ import {
 } from '../api'
 import { EmptyState } from '../components/EmptyState'
 import { Icon } from '../components/Icon'
-import { CardsSkeleton, TableSkeleton } from '../components/Loading'
+import { PageLoader } from '../components/Loading'
 import { PageHeader } from '../components/PageHeader'
 import { StatCard } from '../components/StatCard'
 import {
@@ -145,24 +145,7 @@ export function Dashboard() {
           title="Resumen de vacunación"
           description="Cargando la actividad más reciente del servicio…"
         />
-        <CardsSkeleton />
-        <div className="dashboard-grid">
-          <div className="card">
-            <div className="card__body">
-              <div className="skeleton" style={{ height: 260 }} />
-            </div>
-          </div>
-          <div className="card">
-            <div className="card__body">
-              <div className="skeleton" style={{ height: 260 }} />
-            </div>
-          </div>
-        </div>
-        <div className="card">
-          <div className="card__body">
-            <TableSkeleton rows={5} columns={5} />
-          </div>
-        </div>
+        <PageLoader label="Cargando el panel de vacunación…" />
       </>
     )
   }

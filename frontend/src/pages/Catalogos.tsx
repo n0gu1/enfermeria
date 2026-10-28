@@ -18,7 +18,7 @@ import {
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { EmptyState } from '../components/EmptyState'
 import { Icon, type IconName } from '../components/Icon'
-import { TableSkeleton } from '../components/Loading'
+import { PageLoader } from '../components/Loading'
 import { Modal } from '../components/Modal'
 import { PageHeader } from '../components/PageHeader'
 import { useToast } from '../components/Toast'
@@ -622,9 +622,7 @@ export function Catalogos({ resource }: { resource: CatalogKey }) {
             </button>
           </div>
         ) : loading && items.length === 0 ? (
-          <div className="card__body">
-            <TableSkeleton rows={6} columns={config.columns.length + 1} />
-          </div>
+          <PageLoader label={`Cargando catálogo de ${config.plural}…`} />
         ) : items.length === 0 ? (
           <EmptyState
             icon={search ? 'search' : config.icon}
