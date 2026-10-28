@@ -42,10 +42,10 @@ dotnet restore api/Enfermeria.Api.csproj
 dotnet run --project api/Enfermeria.Api.csproj
 ```
 
-La API queda disponible en `http://localhost:5000` (o el puerto que indique la consola):
+La API queda disponible en `http://localhost:5042` (o el puerto que indique la consola):
 
-- Swagger UI: `http://localhost:5000/swagger`
-- Health check: `http://localhost:5000/health`
+- Swagger UI: `http://localhost:5042/swagger`
+- Health check: `http://localhost:5042/health`
 
 ## Endpoints
 
@@ -66,7 +66,7 @@ Recursos: `lugares`, `vacunas`, `tiempos`, `dosis`.
 Ejemplo:
 
 ```bash
-curl -X POST http://localhost:5000/api/lugares \
+curl -X POST http://localhost:5042/api/lugares \
   -H "Content-Type: application/json" \
   -d '{"nombre":"Centro de Salud Central","direccion":"Av. Principal #123","activo":true}'
 ```
@@ -117,7 +117,7 @@ Respuesta paginada:
 Ejemplo de creación:
 
 ```bash
-curl -X POST http://localhost:5000/api/registros \
+curl -X POST http://localhost:5042/api/registros \
   -H "Content-Type: application/json" \
   -d '{
     "lugarId": 1,
@@ -151,13 +151,13 @@ Ejemplos:
 
 ```bash
 # Total por lugar y fecha
-curl "http://localhost:5000/api/conteos/lugar-fecha?desde=2026-10-01&hasta=2026-10-31"
+curl "http://localhost:5042/api/conteos/lugar-fecha?desde=2026-10-01&hasta=2026-10-31"
 
 # Total de un lugar en una fecha
-curl "http://localhost:5000/api/conteos/lugar-fecha?lugarId=1&fecha=2026-10-28"
+curl "http://localhost:5042/api/conteos/lugar-fecha?lugarId=1&fecha=2026-10-28"
 
 # Resumen del día
-curl "http://localhost:5000/api/conteos/resumen?fecha=2026-10-28"
+curl "http://localhost:5042/api/conteos/resumen?fecha=2026-10-28"
 ```
 
 ## Manejo de errores

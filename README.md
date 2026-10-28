@@ -42,7 +42,7 @@ Sistema para registrar y **contar vacunas aplicadas** por lugar, fecha, vacuna, 
    dotnet run --project api/Enfermeria.Api.csproj
    ```
 
-3. Abre Swagger en `http://localhost:5000/swagger`.
+3. Abre Swagger en `http://localhost:5042/swagger`.
 
 ## API desplegada
 
