@@ -2421,6 +2421,27 @@ svg {
   object-fit: contain;
 }
 
+.startup-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 16px;
+  background: #fff;
+}
+
+.startup-splash__image {
+  display: block;
+  width: min(420px, 88vw);
+  max-height: 92vh;
+  max-height: 92dvh;
+  height: auto;
+  object-fit: contain;
+}
+
 .spinner {
   width: 18px;
   height: 18px;

@@ -1,9 +1,25 @@
+export const LOADING_GIF_URL = '/perrito-enfermero-cargando.gif'
+
+export function StartupLoader({ onLoaded }: { onLoaded: () => void }) {
+  return (
+    <div className="startup-splash" role="status" aria-live="polite">
+      <img
+        className="startup-splash__image"
+        src={LOADING_GIF_URL}
+        alt="Cargando el sistema de enfermería"
+        onLoad={onLoaded}
+        onError={onLoaded}
+      />
+    </div>
+  )
+}
+
 export function PageLoader({ label = 'Cargando información…' }: { label?: string }) {
   return (
     <div className="page-loader" role="status" aria-live="polite">
       <img
         className="page-loader__image"
-        src="/perrito-enfermero-cargando.gif"
+        src={LOADING_GIF_URL}
         alt={label}
       />
     </div>
