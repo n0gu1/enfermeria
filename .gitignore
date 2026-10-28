@@ -1,0 +1,21 @@
+# Variables de entorno con secretos
+.env
+.env.local
+.env.*.local
+
+# .NET
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+.vs/
+.vscode/
+
+# Herramientas
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Docker
+.docker/

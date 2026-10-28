@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: enfermeria-api
+    runtime: docker
+    plan: free
+    region: ohio
+    branch: main
+    repo: https://github.com/n0gu1/enfermeria
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeploy: yes
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__DefaultConnection
+        sync: false
