@@ -26,11 +26,8 @@ export function StartupLoader({ onLoaded }: { onLoaded: () => void }) {
 export function PageLoader({ label = 'Cargando información…' }: { label?: string }) {
   return (
     <div className="page-loader" role="status" aria-live="polite">
-      <img
-        className="page-loader__image"
-        src={LOADING_GIF_URL}
-        alt={label}
-      />
+      <span className="spinner page-loader__spinner" aria-hidden="true" />
+      <span className="page-loader__label">{label}</span>
     </div>
   )
 }

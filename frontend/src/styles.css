@@ -2413,12 +2413,17 @@ svg {
   text-align: center;
 }
 
-.page-loader__image {
-  display: block;
-  width: min(340px, 78vw);
-  max-height: min(62vh, 480px);
-  height: auto;
-  object-fit: contain;
+.page-loader__spinner {
+  width: 34px;
+  height: 34px;
+  border-width: 3px;
+}
+
+.page-loader__label {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .startup-splash {
