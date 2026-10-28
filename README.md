@@ -46,8 +46,8 @@ Sistema para registrar y **contar vacunas aplicadas** por lugar, fecha, vacuna, 
 
 ## API desplegada
 
-- Swagger: `https://enfermeria-api.onrender.com/swagger`
-- Health check: `https://enfermeria-api.onrender.com/health`
+- Swagger: `https://enfermeria-api-odz8.onrender.com/swagger`
+- Health check: `https://enfermeria-api-odz8.onrender.com/health`
 
 ## Conteo principal
 
