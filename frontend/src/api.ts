@@ -365,6 +365,11 @@ export const api = {
         method: 'POST',
         body: JSON.stringify(payload),
       }),
+    createBatch: (payload: RegistroPayload[]) =>
+      request<{ cantidad: number }>('/api/registros/lote', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      }),
     update: (id: number, payload: RegistroPayload) =>
       request<Registro>(`/api/registros/${id}`, {
         method: 'PUT',

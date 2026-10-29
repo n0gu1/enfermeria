@@ -103,8 +103,10 @@ export function Registros() {
   const [editing, setEditing] = useState<Registro | null>(null)
   const [form, setForm] = useState<RegistroForm>(emptyForm)
   const [selectedVacunas, setSelectedVacunas] = useState<string[]>([])
+  const [vacunaCantidades, setVacunaCantidades] = useState<Record<string, string>>({})
   const [formError, setFormError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const [saveUncertain, setSaveUncertain] = useState(false)
 
   const [deleteTarget, setDeleteTarget] = useState<Registro | null>(null)
   const [deleting, setDeleting] = useState(false)
@@ -194,6 +196,8 @@ export function Registros() {
     setEditing(null)
     setForm({ ...emptyForm, fecha: todayISO() })
     setSelectedVacunas([])
+    setVacunaCantidades({})
+    setSaveUncertain(false)
     setFormError(null)
     setFormOpen(true)
   }, [])
@@ -225,6 +229,7 @@ export function Registros() {
 
   function openEdit(registro: Registro) {
     setEditing(registro)
+    setSaveUncertain(false)
     setForm({
       fecha: registro.fecha.slice(0, 10),
       lugarId: String(registro.lugarId),
@@ -249,19 +254,18 @@ export function Registros() {
     event.preventDefault()
     setFormError(null)
 
-    if (!editing) {
-      return setFormError('Esta es una vista previa local. El registro de varias vacunas todavía no está habilitado para guardar.')
-    }
-
     if (!form.fecha) return setFormError('Selecciona la fecha de la jornada.')
     if (!form.lugarId) return setFormError('Selecciona el lugar de vacunación.')
-    if (!form.vacunaId) return setFormError('Selecciona la vacuna aplicada.')
+    if (editing ? !form.vacunaId : selectedVacunas.length === 0) return setFormError('Selecciona al menos una vacuna.')
     if (!form.tiempoId) return setFormError('Selecciona el tiempo del esquema.')
     if (!form.dosisId) return setFormError('Selecciona la dosis aplicada.')
 
     const cantidad = Number(form.cantidad)
-    if (!Number.isInteger(cantidad) || cantidad < 1) {
+    if (editing && (!Number.isInteger(cantidad) || cantidad < 1)) {
       return setFormError('La cantidad debe ser un número entero mayor o igual a 1.')
+    }
+    if (!editing && selectedVacunas.some((id) => !Number.isInteger(Number(vacunaCantidades[id])) || Number(vacunaCantidades[id]) < 1)) {
+      return setFormError('Indica una cantidad entera mayor o igual a 1 para cada vacuna seleccionada.')
     }
 
     const payload = {
@@ -280,14 +284,22 @@ export function Registros() {
         await api.registros.update(editing.id, payload)
         toast.show('Registro actualizado correctamente.')
       } else {
-        await api.registros.create(payload)
-        toast.show('Registro creado correctamente.')
+        await api.registros.createBatch(selectedVacunas.map((id) => ({
+          ...payload, vacunaId: Number(id), cantidad: Number(vacunaCantidades[id]),
+        })))
+        toast.show('Registros creados correctamente.')
       }
       setFormOpen(false)
       setEditing(null)
       if (!editing && page !== 1) setPage(1)
       else await load()
     } catch (caught) {
+      if (!editing && (!(caught instanceof ApiError) || caught.status === 0 || caught.status >= 500)) {
+        setSaveUncertain(true)
+        setFormError('No se pudo confirmar si los registros se guardaron. Cierra esta ventana y revisa Registros antes de intentar nuevamente para evitar duplicados.')
+        void load()
+        return
+      }
       setFormError(
         caught instanceof ApiError
           ? caught.message
@@ -759,9 +771,9 @@ export function Registros() {
               type="submit"
               form="registro-form"
               className="button button--primary"
-              disabled={saving}
+              disabled={saving || saveUncertain}
             >
-              {saving ? 'Guardando…' : editing ? 'Guardar cambios' : 'Probar registro'}
+              {saving ? 'Guardando…' : editing ? 'Guardar cambios' : 'Crear registros'}
             </button>
           </>
         }
@@ -827,9 +839,11 @@ export function Registros() {
                       <input
                         type="checkbox"
                         checked={selectedVacunas.includes(id)}
-                        onChange={(event) => setSelectedVacunas((current) =>
-                          event.target.checked ? [...current, id] : current.filter((value) => value !== id),
-                        )}
+                        onChange={(event) => {
+                          const checked = event.target.checked
+                          setSelectedVacunas((current) => checked ? [...current, id] : current.filter((value) => value !== id))
+                          if (checked) setVacunaCantidades((current) => ({ ...current, [id]: current[id] ?? '1' }))
+                        }}
                       />
                       <span>{item.nombre}</span>
                     </label>
@@ -837,8 +851,18 @@ export function Registros() {
                 })}
               </div>
               <small className="field__hint">
-                {selectedVacunas.length} {selectedVacunas.length === 1 ? 'vacuna seleccionada' : 'vacunas seleccionadas'} · Vista previa local; no se guardarán registros.
+                {selectedVacunas.length} {selectedVacunas.length === 1 ? 'vacuna seleccionada' : 'vacunas seleccionadas'}. Se creará un registro por vacuna, con la misma fecha, lugar, tiempo y dosis.
               </small>
+              {selectedVacunas.map((id) => {
+                const vacuna = catalogos.vacunas.find((item) => String(item.id) === id)
+                return (
+                  <label className="field vaccine-picker__quantity" key={id}>
+                    <span>Cantidad de dosis · {vacuna?.nombre}</span>
+                    <input type="number" min={1} step={1} required value={vacunaCantidades[id] ?? '1'}
+                      onChange={(event) => setVacunaCantidades((current) => ({ ...current, [id]: event.target.value }))} />
+                  </label>
+                )
+              })}
             </fieldset>
           )}
           <label className="field">
@@ -880,7 +904,7 @@ export function Registros() {
                   ))}
             </select>
           </label>
-          <label className="field">
+          {editing && <label className="field">
             <span>Cantidad de dosis *</span>
             <input
               type="number"
@@ -894,7 +918,7 @@ export function Registros() {
               }
             />
             <small className="field__hint">Puedes registrar un lote completo.</small>
-          </label>
+          </label>}
           <label className="field span-2">
             <span>Observación</span>
             <textarea

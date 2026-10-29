@@ -3,6 +3,7 @@ using Enfermeria.Api.Dtos;
 using Enfermeria.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Enfermeria.Api.Controllers;
 
@@ -114,6 +115,34 @@ public class RegistrosController : ControllerBase
 
         var result = await GetDtoByIdAsync(entity.Id, ct);
         return CreatedAtAction(nameof(GetById), new { id = entity.Id }, result);
+    }
+
+    [HttpPost("lote")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CreateBatch([FromBody] List<RegistroCreateDto> items, CancellationToken ct = default)
+    {
+        if (items.Count == 0 || items.Count > 100 || items.Any(x => x is null) || items.Select(x => x.VacunaId).Distinct().Count() != items.Count)
+            return BadRequest(new ProblemDetails { Title = "Lista inválida", Detail = "Selecciona entre 1 y 100 vacunas diferentes." });
+
+        foreach (var dto in items)
+        {
+            if (dto is null || !Validator.TryValidateObject(dto, new ValidationContext(dto), new List<ValidationResult>(), true))
+                return BadRequest(new ProblemDetails { Title = "Datos inválidos", Detail = "Revisa los datos y la cantidad de cada vacuna." });
+            var error = await ValidateReferencesAsync(dto.LugarId, dto.VacunaId, dto.TiempoId, dto.DosisId, ct);
+            if (error is not null)
+                return BadRequest(new ProblemDetails { Title = "Referencia inválida", Detail = error });
+        }
+
+        var entities = items.Select(dto => new RegistroVacunacion
+        {
+            LugarId = dto.LugarId, Fecha = dto.Fecha!.Value, VacunaId = dto.VacunaId,
+            TiempoId = dto.TiempoId, DosisId = dto.DosisId, Cantidad = dto.Cantidad,
+            Observacion = string.IsNullOrWhiteSpace(dto.Observacion) ? null : dto.Observacion.Trim()
+        }).ToList();
+        _db.RegistrosVacunacion.AddRange(entities);
+        await _db.SaveChangesAsync(ct);
+        return StatusCode(StatusCodes.Status201Created, new { cantidad = entities.Count });
     }
 
     [HttpPut("{id:long}")]

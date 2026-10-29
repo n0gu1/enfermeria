@@ -2438,6 +2438,10 @@ svg {
   cursor: pointer;
 }
 
+.vaccine-picker__quantity {
+  margin-top: 12px;
+}
+
 .field .vaccine-picker__option input {
   width: 16px;
   height: 16px;
