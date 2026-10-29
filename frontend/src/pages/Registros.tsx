@@ -102,6 +102,7 @@ export function Registros() {
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Registro | null>(null)
   const [form, setForm] = useState<RegistroForm>(emptyForm)
+  const [selectedVacunas, setSelectedVacunas] = useState<string[]>([])
   const [formError, setFormError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
@@ -192,6 +193,7 @@ export function Registros() {
   const openCreate = useCallback(() => {
     setEditing(null)
     setForm({ ...emptyForm, fecha: todayISO() })
+    setSelectedVacunas([])
     setFormError(null)
     setFormOpen(true)
   }, [])
@@ -246,6 +248,10 @@ export function Registros() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setFormError(null)
+
+    if (!editing) {
+      return setFormError('Esta es una vista previa local. El registro de varias vacunas todavía no está habilitado para guardar.')
+    }
 
     if (!form.fecha) return setFormError('Selecciona la fecha de la jornada.')
     if (!form.lugarId) return setFormError('Selecciona el lugar de vacunación.')
@@ -755,7 +761,7 @@ export function Registros() {
               className="button button--primary"
               disabled={saving}
             >
-              {saving ? 'Guardando…' : editing ? 'Guardar cambios' : 'Crear registro'}
+              {saving ? 'Guardando…' : editing ? 'Guardar cambios' : 'Probar registro'}
             </button>
           </>
         }
@@ -789,23 +795,52 @@ export function Registros() {
               ))}
             </select>
           </label>
-          <label className="field">
-            <span>Vacuna *</span>
-            <select
-              required
-              value={form.vacunaId}
-              onChange={(event) =>
-                setForm((current) => ({ ...current, vacunaId: event.target.value }))
-              }
-            >
-              <option value="">Selecciona una vacuna…</option>
-              {catalogos.vacunas.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {catalogLabel(item.nombre, item.activo)}
-                </option>
-              ))}
-            </select>
-          </label>
+          {editing ? (
+            <label className="field">
+              <span>Vacuna *</span>
+              <select
+                required
+                value={form.vacunaId}
+                onChange={(event) =>
+                  setForm((current) => ({ ...current, vacunaId: event.target.value }))
+                }
+              >
+                <option value="">Selecciona una vacuna…</option>
+                {catalogos.vacunas
+                  .filter((item) => item.activo || editing.vacunaId === item.id)
+                  .map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {catalogLabel(item.nombre, item.activo)}
+                    </option>
+                  ))}
+              </select>
+            </label>
+          ) : (
+            <fieldset className="field vaccine-picker span-2">
+              <legend>Vacunas *</legend>
+              <p className="field__hint">Selecciona una o varias vacunas para esta jornada.</p>
+              <div className="vaccine-picker__options">
+                {catalogos.vacunas.filter((item) => item.activo).map((item) => {
+                  const id = String(item.id)
+                  return (
+                    <label className="vaccine-picker__option" key={item.id}>
+                      <input
+                        type="checkbox"
+                        checked={selectedVacunas.includes(id)}
+                        onChange={(event) => setSelectedVacunas((current) =>
+                          event.target.checked ? [...current, id] : current.filter((value) => value !== id),
+                        )}
+                      />
+                      <span>{item.nombre}</span>
+                    </label>
+                  )
+                })}
+              </div>
+              <small className="field__hint">
+                {selectedVacunas.length} {selectedVacunas.length === 1 ? 'vacuna seleccionada' : 'vacunas seleccionadas'} · Vista previa local; no se guardarán registros.
+              </small>
+            </fieldset>
+          )}
           <label className="field">
             <span>Tiempo del esquema *</span>
             <select
