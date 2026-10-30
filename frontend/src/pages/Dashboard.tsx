@@ -56,7 +56,7 @@ function buildDays(porFecha: ConteoPorFecha[]): DayPoint[] {
   })
 }
 
-export function Dashboard() {
+export function Dashboard({ onInitialLoadComplete }: { onInitialLoadComplete: () => void }) {
   const [resumen, setResumen] = useState<ResumenConteo | null>(null)
   const [porFecha, setPorFecha] = useState<ConteoPorFecha[]>([])
   const [recientes, setRecientes] = useState<Registro[]>([])
@@ -99,6 +99,10 @@ export function Dashboard() {
   useEffect(() => {
     void load()
   }, [load])
+
+  useEffect(() => {
+    if (!loading) onInitialLoadComplete()
+  }, [loading, onInitialLoadComplete])
 
   const days = useMemo(() => buildDays(porFecha), [porFecha])
   const maxDay = Math.max(...days.map((day) => day.total), 1)
